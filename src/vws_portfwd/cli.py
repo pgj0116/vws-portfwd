@@ -80,14 +80,31 @@ def init() -> None:
 
 
 @main.command()
-@click.argument("alias")
-def add(alias: str) -> None:
-    """Register a new alias for SSM port forwarding."""
+@click.argument("alias", required=False)
+def add(alias: str | None) -> None:
+    """Register a new alias for SSM port forwarding.
+
+    alias 인자 생략 시 wizard 안에서 직접 입력하도록 묻습니다.
+    예) vws-portfwd add mongo-prod
+        vws-portfwd add               # 대화형으로 alias 입력
+    """
     data = cfg_mod.load()
     profiles = list(data["profiles"].keys())
     if not profiles:
         click.echo("등록된 profile 없음. 먼저 `vws-portfwd init` 실행.", err=True)
         sys.exit(1)
+
+    if not alias:
+        alias = click.prompt("alias 이름 (예: mongo-prod)").strip()
+    if not alias:
+        click.echo("alias 이름이 비어있습니다.", err=True)
+        sys.exit(1)
+    if alias in data["aliases"]:
+        ow = click.confirm(f"alias '{alias}' 이미 존재합니다. 덮어쓸까요?", default=False)
+        if not ow:
+            click.echo("취소됨.")
+            sys.exit(0)
+
     default_profile = profiles[0]
     profile = click.prompt("AWS profile", default=default_profile)
     if profile not in profiles:
