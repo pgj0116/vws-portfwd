@@ -35,13 +35,25 @@ vws-portfwd init
 - 권한 있는 계정/role 자동 발견 → 골라서 첫 profile 등록
 
 ### Alias 등록
+
+alias 이름을 인자로 주거나 wizard 안에서 입력하거나 둘 다 가능.
+
 ```bash
+# 1) alias 인자로 직접
 vws-portfwd add mongo-prod
-# AWS profile? sso-dba2
+# AWS profile?   sso-dba2
 # EC2 instance ID? i-0a690f24812482ab1
-# Local port?  37777
-# Remote port? 27017
+# Local port?    37777
+# Remote port?   27017
+# ✓ alias 'mongo-prod' 등록
+
+# 2) 인자 없이 → wizard 가 alias 이름도 묻습니다
+vws-portfwd add
+# alias 이름 (예: mongo-prod): mongo-prod
+# AWS profile?   ...
 ```
+
+이미 같은 이름이 있으면 덮어쓸지 확인 프롬프트가 뜹니다.
 
 ### 실행
 ```bash
